@@ -201,9 +201,8 @@
 // });
 
 
-
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { StyleSheet, View, Dimensions, TouchableOpacity, Text } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 import MapViewDirections from 'react-native-maps-directions';
@@ -219,6 +218,8 @@ const GOOGLE_MAPS_APIKEY = 'AIzaSyBltXiAjFjjxONIguLW_7gG4Xr4qS1G3FM'; // Get an 
 export default function App() {
     const [region, setRegion] = useState(null);
     const [destination, setDestination] = useState(null);
+    const [selectedMarker, setSelectedMarker] = useState(null);
+    const [showButton, setShowButton] = useState(false);
     const mapRef = useRef(null);
 
     useEffect(() => {
@@ -239,6 +240,13 @@ export default function App() {
         })();
     }, []);
 
+    const mapPin = {
+        latitude: 51.926517,
+        longitude: 4.462456,
+        latitudeDelta: 0.09,
+        longitudeDelta: 0.004,
+    }
+
     const handleSearch = (details) => {
         const { lat, lng } = details.geometry.location;
         setDestination({ latitude: lat, longitude: lng });
@@ -250,6 +258,16 @@ export default function App() {
         });
     };
 
+    const handleMarkerPress = (coordinate) => {
+        setSelectedMarker(coordinate);
+        setShowButton(true);
+    };
+
+    const handleButtonPress = () => {
+        setDestination(selectedMarker);
+        setShowButton(false);
+    };
+
     return (
         <View style={styles.container}>
             {region && (
@@ -259,6 +277,12 @@ export default function App() {
                     initialRegion={region}
                     showsUserLocation={true}
                 >
+                    <Marker
+                        coordinate={mapPin}
+                        title='Dalmo Doman'
+                        description='scan QR-code to collect Dalmo!'
+                        onPress={() => handleMarkerPress(mapPin)}
+                    />
                     {destination && (
                         <>
                             <Marker coordinate={destination} />
@@ -291,6 +315,11 @@ export default function App() {
                     listView: { backgroundColor: 'white' },
                 }}
             />
+            {showButton && (
+                <TouchableOpacity style={styles.routeButton} onPress={handleButtonPress}>
+                    <Text style={styles.routeButtonText}>Start Route</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 }
@@ -302,8 +331,17 @@ const styles = StyleSheet.create({
     map: {
         flex: 1,
     },
+    routeButton: {
+        position: 'absolute',
+        bottom: 20,
+        left: '50%',
+        transform: [{ translateX: -(width * 0.5) }],
+        backgroundColor: 'blue',
+        padding: 10,
+        borderRadius: 5,
+    },
+    routeButtonText: {
+        color: 'white',
+        fontSize: 16,
+    },
 });
-
-
-
-
