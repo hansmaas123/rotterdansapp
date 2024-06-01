@@ -15,12 +15,13 @@ const GOOGLE_MAPS_APIKEY = 'AIzaSyBltXiAjFjjxONIguLW_7gG4Xr4qS1G3FM'; // Get an 
 const rem = PixelRatio.getFontScale() * 16; // Assuming 16px as the base font size
 
 export default function App() {
-    const [region, setRegion] = useState(null);
-    const [destination, setDestination] = useState(null);
-    const [selectedMarker, setSelectedMarker] = useState(null);
+    const [region, setRegion] = useState();
+    const [destination, setDestination] = useState();
+    const [selectedMarker, setSelectedMarker] = useState();
     const [routeActive, setRouteActive] = useState(false);
-    const [userLocation, setUserLocation] = useState(null);
-    const mapRef = useRef(null);
+    const [userLocation, setUserLocation] = useState();
+    const [showButton, setShowButton] = useState(false);
+    const mapRef = useRef();
 
     useEffect(() => {
         (async () => {
@@ -54,6 +55,8 @@ export default function App() {
         const coordinate = {latitude: lat, longitude: lng};
         setSelectedMarker(coordinate);
         setDestination(coordinate);
+        setRouteActive(true)
+        setShowButton(true);
         mapRef.current.animateToRegion({
             latitude: lat,
             longitude: lng,
@@ -65,17 +68,22 @@ export default function App() {
     const handleMarkerPress = (coordinate) => {
         setSelectedMarker(coordinate);
         setRouteActive(false);
+        setShowButton(true);
     };
 
     const handleStartStopRoute = () => {
-        if (routeActive) {
+        if (routeActive && showButton) {
             setDestination(null);
             setRouteActive(false);
-        } else {
-            if (selectedMarker){
+            setShowButton(false);
+        } else if (routeActive === false && showButton){
+            if(selectedMarker){
                 setDestination(selectedMarker);
                 setRouteActive(true);
             }
+        } else {
+            setRouteActive(false);
+            setDestination(null);
         }
     };
 
@@ -127,19 +135,25 @@ export default function App() {
                     container: {
                         position: 'absolute',
                         top: 10,
+                        left: 20,
                         width: '90%',
                     },
                     listView: { backgroundColor: 'white' },
                 }}
             />
-            {selectedMarker && !routeActive && (
+            {selectedMarker && !routeActive && showButton && (
                 <TouchableOpacity style={styles.routeButton} onPress={handleStartStopRoute}>
                     <Text style={styles.routeButtonText}>Start Route</Text>
                 </TouchableOpacity>
             )}
-            {routeActive && (
+            {routeActive && showButton && (
                 <TouchableOpacity style={styles.routeButton} onPress={handleStartStopRoute}>
                     <Text style={styles.routeButtonText}>Stop Route</Text>
+                </TouchableOpacity>
+            )}
+            {!showButton && (
+                <TouchableOpacity style={styles.routeButton}>
+                    <Text style={styles.routeButtonText}>Nothing here</Text>
                 </TouchableOpacity>
             )}
             <TouchableOpacity style={styles.centerButton} onPress={handleCenterPress}>

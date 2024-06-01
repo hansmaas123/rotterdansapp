@@ -4,7 +4,6 @@ const StackLayout = () => {
     return (
         <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Slot />
         </Stack>
     )
 }
