@@ -76,6 +76,7 @@ export default function App() {
             setDestination(null);
             setRouteActive(false);
             setShowButton(false);
+            handleCenterPress();
         } else if (routeActive === false && showButton){
             if(selectedMarker){
                 setDestination(selectedMarker);
@@ -103,14 +104,19 @@ export default function App() {
                     showsUserLocation={true}
                 >
                     <Marker
+                    style={styles.pinPoint__wrapper}
                         coordinate={mapPin}
                         title='Dalmo Doman'
                         description='scan QR-code to collect Dalmo!'
                         onPress={() => handleMarkerPress(mapPin)}
-                    />
+                    >
+                        <Text style={styles.pinPoint}>Dalmo Doman</Text>
+                    </Marker>
                     {destination && (
                         <>
-                            <Marker coordinate={destination} />
+                            <Marker coordinate={destination}>
+                                <Text>Dalmo Doman</Text>
+                            </Marker>
                             <MapViewDirections
                                 origin={region}
                                 destination={destination}
@@ -124,21 +130,39 @@ export default function App() {
                 </MapView>
             )}
             <GooglePlacesAutocomplete
-                placeholder="Search"
+                placeholder="Enter Location"
+                textInputProps={{
+                    placeholderTextColor: 'grey',
+                }}
+                enablePoweredByContainer={false}
                 onPress={(data, details = null) => handleSearch(details)}
                 query={{
                     key: GOOGLE_MAPS_APIKEY,
                     language: 'en',
                 }}
                 fetchDetails={true}
+
                 styles={{
-                    container: {
+                    description: {
+                        paddingVertical: 10
+                    },
+                textInput: {
+                    borderRadius: 50,
+                    height: rem*4,
+                    paddingHorizontal: rem*2,
+                    fontSize: 18
+                },
+                container: {
+                        borderRadius: 50,
                         position: 'absolute',
                         top: 10,
                         left: 20,
                         width: '90%',
                     },
-                    listView: { backgroundColor: 'white' },
+                    listView: { 
+                        backgroundColor: 'white', 
+                        borderRadius: 15 
+                    }
                 }}
             />
             {selectedMarker && !routeActive && showButton && (
@@ -149,11 +173,6 @@ export default function App() {
             {routeActive && showButton && (
                 <TouchableOpacity style={styles.routeButton} onPress={handleStartStopRoute}>
                     <Text style={styles.routeButtonText}>Stop Route</Text>
-                </TouchableOpacity>
-            )}
-            {!showButton && (
-                <TouchableOpacity style={styles.routeButton}>
-                    <Text style={styles.routeButtonText}>Nothing here</Text>
                 </TouchableOpacity>
             )}
             <TouchableOpacity style={styles.centerButton} onPress={handleCenterPress}>
@@ -178,7 +197,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         paddingVertical: rem,
         paddingHorizontal: rem * 2,
-        borderRadius: 20,
+        borderRadius: 50,
     },
     routeButtonText: {
         color: 'white',
@@ -191,10 +210,19 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         paddingVertical: rem,
         paddingHorizontal: rem * 2,
-        borderRadius: 20,
+        borderRadius: 50,
     },
     centerButtonText: {
         color: 'white',
         fontSize: 16,
+    },
+    pinPoint__wrapper: {
+        backgroundColor: 'white',
+        borderRadius: 22
+    },
+    pinPoint: {
+        padding: rem,
+        borderRadius: 20,
+        fontSize: 12
     }
 });
