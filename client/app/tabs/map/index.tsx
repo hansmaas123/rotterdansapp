@@ -1,209 +1,6 @@
-// import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
-// import {
-//     StyleSheet,
-//     View,
-//     Dimensions,
-//     Text,
-//     TouchableOpacity,
-// } from "react-native";
-// import {
-//     GooglePlaceDetail,
-//     GooglePlacesAutocomplete,
-// } from "react-native-google-places-autocomplete";
-// import Constants from "expo-constants";
-// import { useRef, useState } from "react";
-// import MapViewDirections from "react-native-maps-directions";
-
-// // https://docs.expo.dev/versions/latest/sdk/map-view/
-// // https://www.npmjs.com/package/react-native-google-places-autocomplete
-// // https://www.npmjs.com/package/react-native-maps-directions
-
-// const { width, height } = Dimensions.get("window");
-
-// const ASPECT_RATIO = width / height;
-// const LATITUDE_DELTA = 0.02;
-// const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-// const INITIAL_POSITION = {
-//     latitude: 40.76711,
-//     longitude: -73.979704,
-//     latitudeDelta: LATITUDE_DELTA,
-//     longitudeDelta: LONGITUDE_DELTA,
-// };
-
-// type InputAutocompleteProps = {
-//     label: string;
-//     placeholder?: string;
-//     onPlaceSelected: (details: GooglePlaceDetail | null) => void;
-// };
-
-// function InputAutocomplete({
-//     label,
-//     placeholder,
-//     onPlaceSelected,
-// }: InputAutocompleteProps) {
-//     return (
-//         <>
-//             <Text>{label}</Text>
-//             <GooglePlacesAutocomplete
-//                 styles={{ textInput: styles.input }}
-//                 placeholder={placeholder || ""}
-//                 fetchDetails
-//                 onPress={(data, details = null) => {
-//                     onPlaceSelected(details);
-//                 }}
-//                 query={{
-//                     key: "AIzaSyBltXiAjFjjxONIguLW_7gG4Xr4qS1G3FM",
-//                     language: "pt-BR",
-//                 }}
-//             />
-//         </>
-//     );
-// }
-
-// export default function App() {
-//     const [origin, setOrigin] = useState<LatLng | null>();
-//     const [destination, setDestination] = useState<LatLng | null>();
-//     const [showDirections, setShowDirections] = useState(false);
-//     const [distance, setDistance] = useState(0);
-//     const [duration, setDuration] = useState(0);
-//     const mapRef = useRef<MapView>(null);
-
-//     const moveTo = async (position: LatLng) => {
-//         const camera = await mapRef.current?.getCamera();
-//         if (camera) {
-//             camera.center = position;
-//             mapRef.current?.animateCamera(camera, { duration: 1000 });
-//         }
-//     };
-
-//     const edgePaddingValue = 70;
-
-//     const edgePadding = {
-//         top: edgePaddingValue,
-//         right: edgePaddingValue,
-//         bottom: edgePaddingValue,
-//         left: edgePaddingValue,
-//     };
-
-//     const traceRouteOnReady = (args: any) => {
-//         if (args) {
-//             // args.distance
-//             // args.duration
-//             setDistance(args.distance);
-//             setDuration(args.duration);
-//         }
-//     };
-
-//     const traceRoute = () => {
-//         if (origin && destination) {
-//             setShowDirections(true);
-//             mapRef.current?.fitToCoordinates([origin, destination], { edgePadding });
-//         }
-//     };
-
-//     const onPlaceSelected = (
-//         details: GooglePlaceDetail | null,
-//         flag: "origin" | "destination"
-//     ) => {
-//         const set = flag === "origin" ? setOrigin : setDestination;
-//         const position = {
-//             latitude: details?.geometry.location.lat || 0,
-//             longitude: details?.geometry.location.lng || 0,
-//         };
-//         set(position);
-//         moveTo(position);
-//     };
-//     return (
-//         <View style={styles.container}>
-//             <MapView
-//                 ref={mapRef}
-//                 style={styles.map}
-//                 provider={PROVIDER_GOOGLE}
-//                 initialRegion={INITIAL_POSITION}
-//             >
-//                 {origin && <Marker coordinate={origin} />}
-//                 {destination && <Marker coordinate={destination} />}
-//                 {showDirections && origin && destination && (
-//                     <MapViewDirections
-//                         origin={origin}
-//                         destination={destination}
-//                         apikey={"AIzaSyBltXiAjFjjxONIguLW_7gG4Xr4qS1G3FM"}
-//                         strokeColor="#6644ff"
-//                         strokeWidth={4}
-//                         onReady={traceRouteOnReady}
-//                     />
-//                 )}
-//             </MapView>
-//             <View style={styles.searchContainer}>
-//                 <InputAutocomplete
-//                     label="Origin"
-//                     onPlaceSelected={(details) => {
-//                         onPlaceSelected(details, "origin");
-//                     }}
-//                 />
-//                 <InputAutocomplete
-//                     label="Destination"
-//                     onPlaceSelected={(details) => {
-//                         onPlaceSelected(details, "destination");
-//                     }}
-//                 />
-//                 <TouchableOpacity style={styles.button} onPress={traceRoute}>
-//                     <Text style={styles.buttonText}>Trace route</Text>
-//                 </TouchableOpacity>
-//                 {distance && duration ? (
-//                     <View>
-//                         <Text>Distance: {distance.toFixed(2)}</Text>
-//                         <Text>Duration: {Math.ceil(duration)} min</Text>
-//                     </View>
-//                 ) : null}
-//             </View>
-//         </View>
-//     );
-// }
-
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: "#fff",
-//         alignItems: "center",
-//         justifyContent: "center",
-//     },
-//     map: {
-//         width: Dimensions.get("window").width,
-//         height: Dimensions.get("window").height,
-//     },
-//     searchContainer: {
-//         position: "absolute",
-//         width: "90%",
-//         backgroundColor: "white",
-//         shadowColor: "black",
-//         shadowOffset: { width: 2, height: 2 },
-//         shadowOpacity: 0.5,
-//         shadowRadius: 4,
-//         elevation: 4,
-//         padding: 8,
-//         borderRadius: 8,
-//         top: Constants.statusBarHeight,
-//     },
-//     input: {
-//         borderColor: "#888",
-//         borderWidth: 1,
-//     },
-//     button: {
-//         backgroundColor: "#bbb",
-//         paddingVertical: 12,
-//         marginTop: 16,
-//         borderRadius: 4,
-//     },
-//     buttonText: {
-//         textAlign: "center",
-//     },
-// });
-
-
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, View, Dimensions, TouchableOpacity, Text } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import { StyleSheet, View, Dimensions, TouchableOpacity, Text, PixelRatio } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import MapViewDirections from 'react-native-maps-directions';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -215,11 +12,14 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBltXiAjFjjxONIguLW_7gG4Xr4qS1G3FM'; // Get an API key from Google Cloud Platform
 
+const rem = PixelRatio.getFontScale() * 16; // Assuming 16px as the base font size
+
 export default function App() {
     const [region, setRegion] = useState(null);
     const [destination, setDestination] = useState(null);
     const [selectedMarker, setSelectedMarker] = useState(null);
-    const [showButton, setShowButton] = useState(false);
+    const [routeActive, setRouteActive] = useState(false);
+    const [userLocation, setUserLocation] = useState(null);
     const mapRef = useRef(null);
 
     useEffect(() => {
@@ -231,12 +31,14 @@ export default function App() {
             }
 
             let location = await Location.getCurrentPositionAsync({});
-            setRegion({
+            const userLoc = {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA,
-            });
+            };
+            setRegion(userLoc);
+            setUserLocation(userLoc);
         })();
     }, []);
 
@@ -249,7 +51,9 @@ export default function App() {
 
     const handleSearch = (details) => {
         const { lat, lng } = details.geometry.location;
-        setDestination({ latitude: lat, longitude: lng });
+        const coordinate = {latitude: lat, longitude: lng};
+        setSelectedMarker(coordinate);
+        setDestination(coordinate);
         mapRef.current.animateToRegion({
             latitude: lat,
             longitude: lng,
@@ -260,12 +64,25 @@ export default function App() {
 
     const handleMarkerPress = (coordinate) => {
         setSelectedMarker(coordinate);
-        setShowButton(true);
+        setRouteActive(false);
     };
 
-    const handleButtonPress = () => {
-        setDestination(selectedMarker);
-        setShowButton(false);
+    const handleStartStopRoute = () => {
+        if (routeActive) {
+            setDestination(null);
+            setRouteActive(false);
+        } else {
+            if (selectedMarker){
+                setDestination(selectedMarker);
+                setRouteActive(true);
+            }
+        }
+    };
+
+    const handleCenterPress = () => {
+        if (userLocation) {
+            mapRef.current.animateToRegion(userLocation, 1000);
+        }
     };
 
     return (
@@ -315,11 +132,19 @@ export default function App() {
                     listView: { backgroundColor: 'white' },
                 }}
             />
-            {showButton && (
-                <TouchableOpacity style={styles.routeButton} onPress={handleButtonPress}>
+            {selectedMarker && !routeActive && (
+                <TouchableOpacity style={styles.routeButton} onPress={handleStartStopRoute}>
                     <Text style={styles.routeButtonText}>Start Route</Text>
                 </TouchableOpacity>
             )}
+            {routeActive && (
+                <TouchableOpacity style={styles.routeButton} onPress={handleStartStopRoute}>
+                    <Text style={styles.routeButtonText}>Stop Route</Text>
+                </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.centerButton} onPress={handleCenterPress}>
+                <Text style={styles.centerButtonText}>Center</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -334,14 +159,28 @@ const styles = StyleSheet.create({
     routeButton: {
         position: 'absolute',
         bottom: 20,
-        left: '50%',
+        left: 220,
         transform: [{ translateX: -(width * 0.5) }],
-        backgroundColor: 'blue',
-        padding: 10,
-        borderRadius: 5,
+        backgroundColor: 'black',
+        paddingVertical: rem,
+        paddingHorizontal: rem * 2,
+        borderRadius: 20,
     },
     routeButtonText: {
         color: 'white',
         fontSize: 16,
     },
+    centerButton: {
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        backgroundColor: 'black',
+        paddingVertical: rem,
+        paddingHorizontal: rem * 2,
+        borderRadius: 20,
+    },
+    centerButtonText: {
+        color: 'white',
+        fontSize: 16,
+    }
 });
