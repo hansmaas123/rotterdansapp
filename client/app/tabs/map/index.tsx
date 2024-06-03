@@ -114,9 +114,7 @@ export default function App() {
                     </Marker>
                     {destination && (
                         <>
-                            <Marker coordinate={destination}>
-                                <Text>Dalmo Doman</Text>
-                            </Marker>
+                            <Marker coordinate={destination} />
                             <MapViewDirections
                                 origin={region}
                                 destination={destination}
