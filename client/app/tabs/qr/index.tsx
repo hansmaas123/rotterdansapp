@@ -19,17 +19,6 @@ export default function App() {
         // Linking.openURL(data);
     };
 
-    const renderCamera = () => {
-        return (
-            <View style={styles.cameraContainer}>
-                <BarCodeScanner
-                    onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-                    style={styles.camera}
-                />
-            </View>
-        );
-    };
-
     if (hasPermission === null) {
         return <View />;
     }
@@ -51,7 +40,7 @@ export default function App() {
                 barcodeScannerSettings={{
                     barcodeTypes: ["qr", 'pdf417']
                 }}
-                style={StyleSheet.absoluteFillObject}
+                style={styles.cameraView}
             />
             {scanned && (
                 <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
@@ -97,4 +86,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    cameraView: {
+        width: 300,
+        height: 300,
+    }
 });
