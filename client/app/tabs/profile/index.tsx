@@ -1,13 +1,12 @@
-// RegisterScreen.js
-import { Redirect } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, Pressable, Text } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const RegisterScreen = () => {
+    const navigation = useNavigation();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(null);
     const [usernameError, setUsernameError] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
@@ -68,10 +67,9 @@ const RegisterScreen = () => {
                 } 
                 const data = await response.json();
                 console.log('User registered:', data);
-                return <Redirect href="/tabs/Map" />;
+                navigation.navigate('Map');
             } catch (error) {
                 console.error('Registration failed:', error);
-                setError('Registration failed. Please try again.');
             }
         }
     };
